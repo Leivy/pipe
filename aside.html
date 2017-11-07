@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>aside</title>
+  <style>
+    /* 引入字体文件 */
+
+    @font-face {
+      font-family: 'BlueSky';
+      src: url("./font/BlueSkyStandardLight_0.ttf");
+      /* IE9 Compat Modes */
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Noto-Light';
+      src: url("./font/NotoSansCJKsc-Light_0.otf");
+      /* IE9 Compat Modes */
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #00263c;
+      font-family: 'BlueSky', 'Noto-Light', sans-serif;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    body,
+    html {
+      height: 100%;
+    }
+
+    .wrapper {
+      display: flex;
+      width: 100%;
+    }
+
+    .aside-wrapper {
+      overflow: hidden;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 10%;
+    }
+
+    .title {
+      font-size: 40px;
+      color: #00bebe;
+      letter-spacing: 4px;
+      text-align: center;
+    }
+
+    .content {
+      /* position: relative; */
+    }
+
+    .content ul {}
+
+    .content li {
+      border-bottom: 1px solid #264F67;
+      overflow: hidden;
+      padding: 1% 0;
+      display: flex;
+      /*Flex布局*/
+      display: -webkit-flex;
+      /* Safari */
+      align-items: center;
+      /*指定垂直居中*/
+      position: relative;
+    }
+
+    .avatar {
+      width: 6.2%;
+      border-radius: 50%;
+      /* position: absolute; */
+      position: relative;
+    }
+
+    .avatar::before {
+      content: "";
+      display: inline-block;
+      padding-bottom: 100%;
+      width: .1px;
+    }
+
+    .avatar img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+    }
+
+    .name {
+      /* position: absolute; */
+      font-size: 30px;
+      color: #FFFFFF;
+      margin-left: 2.5%;
+    }
+
+    .score {
+      /* position: absolute; */
+      font-size: 30px;
+      color: #FFFFFF;
+      letter-spacing: 2px;
+      position: absolute;
+      right: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="aside-wrapper">
+      <div class="title">手速排行榜</div>
+      <div class="content">
+        <div class="move">
+
+          <ul>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">周三分</div>
+              <div class="score">2330分</div>
+            </li>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">daisu</div>
+              <div class="score">2330分</div>
+            </li>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">wawdefr</div>
+              <div class="score">2330分</div>
+            </li>
+          </ul>
+
+          <ul>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">周三分</div>
+              <div class="score">2330分</div>
+            </li>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">daisu</div>
+              <div class="score">2330分</div>
+            </li>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">wawdefr</div>
+              <div class="score">2330分</div>
+            </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  // 重定高度
+  window.onload = function () {
+      document.querySelector('.wrapper').style.height = document.querySelector('.wrapper').offsetWidth * 8.5 / 6.5 +
+        "px"
+      // document.querySelector('.score').style.lineHeight = document.querySelector('.name').style.lineHeight = document.querySelector(
+      //   '.name').style.height = document.querySelector('.score').style.height = document.querySelector(
+      //   '.avatar').style.height = document.querySelector('.avatar').offsetWidth + "px"
+
+      var url = "./integral/integral.json";
+      var params = {
+        a: 1,
+        b: 2
+      };
+      $.getJSON(url, params, "callback", function (data) {
+        //todo
+      });
+      var dataArr = $.getJSON("./integral/integral.json", "", "callback", function (data) {
+        console.log(data)
+      })
+
+      // getJSON方法封装
+      var $ = {
+        getJSON: function (url, params, callbackFuncName, callback) {
+          var paramsUrl = "",
+            jsonp = this.getQueryString(url)[callbackFuncName];
+          for (var key in params) {
+            paramsUrl += "&" + key + "=" + encodeURIComponent(params[key]);
+          }
+          url += paramsUrl;
+          window[jsonp] = function (data) {
+            window[jsonp] = undefined;
+            try {
+              delete window[jsonp];
+            } catch (e) {}
+            if (head) {
+              head.removeChild(script);
+            }
+            callback(data);
+          };
+          var head = document.getElementsByTagName('head')[0];
+          var script = document.createElement('script');
+          script.charset = "UTF-8";
+          script.src = url;
+          head.appendChild(script);
+          return true;
+        },
+        getQueryString: function (url) {
+          var result = {},
+            queryString = (url && url.indexOf("?") != -1 && url.split("?")[1]) || location.search.substring(1),
+            re = /([^&=]+)=([^&]*)/g,
+            m;
+          while (m = re.exec(queryString)) {
+            result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+          }
+          return result;
+        }
+      };
+      var $ = {
+        getJSON: function (url, params, callbackFuncName, callback) {
+          var paramsUrl = "",
+            jsonp = this.getQueryString(url)[callbackFuncName];
+          for (var key in params) {
+            paramsUrl += "&" + key + "=" + encodeURIComponent(params[key]);
+          }
+          url += paramsUrl;
+          window[jsonp] = function (data) {
+            window[jsonp] = undefined;
+            try {
+              delete window[jsonp];
+            } catch (e) {}
+
+            if (head) {
+              head.removeChild(script);
+            }
+            callback(data);
+          };
+
+          var head = document.getElementsByTagName('head')[0];
+          var script = document.createElement('script');
+          script.charset = "UTF-8";
+          script.src = url;
+          head.appendChild(script);
+          return true;
+        },
+        getQueryString: function (url) {
+          var result = {},
+            queryString = (url && url.indexOf("?") != -1 && url.split("?")[1]) || location.search.substring(1),
+            re = /([^&=]+)=([^&]*)/g,
+            m;
+          while (m = re.exec(queryString)) {
+            result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+          }
+          return result;
+        }
+      };
+
+      function getjson() {
+        var xmlReq;
+        try {
+          xmlReq = new ActiveXObject("Microsoft.XMLHTTP");
+          var web = "./integral/integral.json"; //json文件路径
+
+          //异步方式
+          xmlReq.open("GET", web, true);
+          xmlReq.onreadystatechange = function () {
+            if (xmlReq.readystate == 4) {
+              document.write(xmlReq.responseText); //对json的文件的操作
+            }
+
+          }
+
+          xmlReq.send();
+
+        } catch (e) {
+          alert(e);
+        }
+      }
+</script>
+
+</html>

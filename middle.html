@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>middle</title>
+  <style>
+    /* 引入字体文件 */
+
+    @font-face {
+      font-family: 'BlueSky';
+      src: url("./font/BlueSkyStandardLight_0.ttf");
+      /* IE9 Compat Modes */
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Noto-Light';
+      src: url("./font/NotoSansCJKsc-Light_0.otf");
+      /* IE9 Compat Modes */
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #00263c;
+      font-family: 'BlueSky', 'Noto-Light', sans-serif;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    body,
+    html {
+      height: 100%;
+    }
+
+    .wrapper {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .middle-wrapper {
+      overflow: hidden;
+      margin: auto;
+      width: 100%;
+      /* height: 100%; */
+    }
+
+    .middle-wrapper div {
+      margin: 0 auto;
+      text-align: center;
+      font-size: 30px;
+    }
+
+    .middle-wrapper .grab-text {
+      /* margin-top: 5.3%; */
+    }
+
+    .middle-wrapper .grab-countdown {
+      margin-top: 0%;
+    }
+
+    #pernum {
+      color: #00bebe;
+      font-size: 200px;
+      margin-top: 2%;
+      display: flex;
+    }
+
+    #pernum span {
+      display: block;
+      text-align: left;
+      margin: auto;
+    }
+
+    #countdown {
+      font-size: 88px;
+      margin-top: 2%;
+      display: flex;
+      width: 25%;
+    }
+
+    #countdown span {
+      flex: 1;
+    }
+
+    #countdown span:nth-child(4) {
+      flex: 2;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="middle-wrapper">
+      <div class="grab-text">送出的积分总数</div>
+      <div id="pernum">
+        <span>0</span>
+      </div>
+      <div class="grab-countdown">倒计时</div>
+      <div id="countdown">
+        <span></span>
+        <span class="second">60</span>
+        <span>:</span>
+        <span class="millisecond">000</span>
+      </div>
+    </div>
+
+    <button class="click">点击</button>
+  </div>
+  <script>
+    // 重定高度
+    // document.querySelector('.wrapper').style.height = document.querySelector('.wrapper').offsetWidth * 8.5 / 20 + "px"
+
+    var pernum = document.querySelector("#pernum");
+    var countdown = document.querySelector("#countdown");
+
+    var ws_middle = null;
+
+    //判断当前浏览器是否支持WebSocket
+    if ('WebSocket' in window) {
+      ws_middle = new WebSocket("ws://10.112.16.92:8088/grabPoints/grabPointsWebSocket");
+    } else {
+      alert('Not support websocket')
+    }
+
+    // 连接成功
+    ws_middle.onopen = function (e) {
+      console.log(e.type)
+    }
+
+    // 接受后台信息
+    ws_middle.onmessage = function (e) {
+      // console.log(e.data)
+      setCountdown(e.data)
+    }
+
+    // 连接失败
+    ws_middle.onerror = function (e) {
+      console.log(e.data)
+    }
+
+    // 连接关闭 
+    ws_middle.onclose = function (e) {
+      console.log(e.data)
+    }
+
+    // 监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+    window.onbeforeunload = function () {
+      ws_middle.close();
+    }
+
+    document.querySelector('.click').onclick = function () {
+      var totalNum = 11111111;
+      setCountdown(totalNum)
+      setPerNum(totalNum)
+    }
+
+    // 积分显示
+    var perNum_timer = null;
+
+    function setPerNum(totalNum, arr) {
+      var num = 0;
+      var step = Math.floor(totalNum / 60000) * 2 + 1;
+      console.log(step)
+      document.querySelector("#pernum span").innerHTML = formatGrab(num)
+      const curTime = new Date();
+      perNum_timer = setInterval(function () {
+        num = num + step;
+        document.querySelector("#pernum span").innerHTML = formatGrab(num)
+      }, 1)
+    }
+
+    // 积分线性变化
+    function grabLineChange(arr) {
+      var gNum;
+      arr.forEach(function (v) {
+        
+      }, this);
+      return formatGrab(gNum)
+    }
+
+    // 倒计时开始
+    function setCountdown(totalNum) {
+      var endTime = new Date();
+      var b = 1; //分钟数
+      endTime.setMinutes(endTime.getMinutes() + b, endTime.getSeconds(), 0);
+      document.querySelector("#countdown .second").innerHTML = formatTime(endTime).s;
+      document.querySelector("#countdown .millisecond").innerHTML = formatTime(endTime).ms;
+      var cd_timer = setInterval(function () {
+        document.querySelector("#countdown .second").innerHTML = formatTime(endTime).s;
+        document.querySelector("#countdown .millisecond").innerHTML = formatTime(endTime).ms;
+        formatTime(endTime, function (e) {
+          if (e && e === "over") {
+            clearInterval(cd_timer)
+            document.querySelector("#pernum span").innerHTML = formatGrab(totalNum)
+            clearInterval(perNum_timer)
+          }
+        })
+      }, 1)
+      console.log(new Date(endTime) - new Date())
+    }
+
+    // 工具：积分格式化
+    function formatGrab(n) {
+      var t = parseInt(n),
+        i, r;
+      for (t = t.toString().replace(/^(\d*)$/, "$1."), t = (t + "00").replace(/(\d*\.\d\d)\d*/, "$1"), t = t.replace(
+          ".", ","), i = /(\d)(\d{3},)/; i.test(t);)
+        t = t.replace(i, "$1,$2");
+      return t = t.replace(/,(\d\d)$/, ".$1"), r = t.split("."), r[1] == "00" && (t = r[0]), t
+    }
+
+    // 工具：时间格式化
+    function formatTime(pra, callback) {
+      var now = new Date();
+      var endDate = new Date(pra);
+      var pra = endDate - now;
+      // console.log(pra)
+      var fm = {
+        msFn: function (n) {
+          if (n < 10) return "00" + n.toString();
+          if (n < 100) return "0" + n.toString();
+          return n.toString();
+        },
+        sFn: function (n) {
+          var _n = parseInt(n, 10); //解析字符串,返回整数
+          if (_n > 0) {
+            if (_n <= 9) {
+              _n = "0" + _n
+            }
+            return String(_n);
+          } else {
+            return "00";
+          }
+        },
+      };
+      var pms = {
+        ms: "000",
+        s: "00"
+      }
+      if (pra > 0) {
+        pms.ms = fm.msFn(pra % 1000);
+        pms.s = fm.sFn(pra / 1000)
+      } else {
+        pms.ms = "000";
+        pms.s = "00";
+        callback && callback("over")
+      }
+      return pms;
+    }
+  </script>
+</body>
+
+</html>
