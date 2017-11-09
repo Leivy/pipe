@@ -76,6 +76,7 @@
       height: 100%;
       width: 100%;
       position: absolute;
+      top: 102%;
     }
 
     .content ul {}
@@ -140,79 +141,17 @@
       <div class="title">手速排行榜</div>
       <div class="content" id="screen">
         <div class="move">
-
+          <ul></ul>
+          <ul></ul>
           <ul>
-            <li>
+            <!-- <li>
               <div class="avatar">
                 <img src="./avatar.jpg" alt="">
               </div>
               <div class="name">周三分</div>
               <div class="score">2330分</div>
-            </li>
-            <li>
-              <div class="avatar">
-                <img src="./avatar.jpg" alt="">
-              </div>
-              <div class="name">daisu</div>
-              <div class="score">2330分</div>
-            </li>
-            <li>
-              <div class="avatar">
-                <img src="./avatar.jpg" alt="">
-              </div>
-              <div class="name">wawdefr</div>
-              <div class="score">2330分</div>
-            </li>
+            </li> -->
           </ul>
-
-          <ul>
-            <li>
-              <div class="avatar">
-                <img src="./avatar.jpg" alt="">
-              </div>
-              <div class="name">周三分</div>
-              <div class="score">2330分</div>
-            </li>
-            <li>
-              <div class="avatar">
-                <img src="./avatar.jpg" alt="">
-              </div>
-              <div class="name">daisu</div>
-              <div class="score">2330分</div>
-            </li>
-            <li>
-              <div class="avatar">
-                <img src="./avatar.jpg" alt="">
-              </div>
-              <div class="name">wawdefr</div>
-              <div class="score">2330分</div>
-            </li>
-          </ul>
-
-          <ul>
-            <li>
-              <div class="avatar">
-                <img src="./avatar.jpg" alt="">
-              </div>
-              <div class="name">周三分</div>
-              <div class="score">2330分</div>
-            </li>
-            <li>
-              <div class="avatar">
-                <img src="./avatar.jpg" alt="">
-              </div>
-              <div class="name">daisu</div>
-              <div class="score">2330分</div>
-            </li>
-            <li>
-              <div class="avatar">
-                <img src="./avatar.jpg" alt="">
-              </div>
-              <div class="name">wawdefr</div>
-              <div class="score">2330分</div>
-            </li>
-          </ul>
-
         </div>
       </div>
     </div>
@@ -269,14 +208,14 @@
             v.integral +
             "\u5206</div>\n</li>";
         }
-        for (var i = 19; i < 40; i++) {
+        for (var i = 20; i < 40; i++) {
           var v = data[i]
           str2 = str2 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
             "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
             v.integral +
             "\u5206</div>\n</li>";
         }
-        for (var i = 39; i < 60; i++) {
+        for (var i = 40; i < 60; i++) {
           var v = data[i]
           str3 = str3 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
             "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
@@ -284,33 +223,9 @@
             "\u5206</div>\n</li>";
         }
       }
-
-      // data.forEach(function (v, i) {
-
-      //   if (i < 20) {
-      //     console.log(v)
-      //     str1 = str1 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
-      //       "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
-      //       v.integral +
-      //       "\u5206</div>\n</li>";
-      //   } else if (i < 40) {
-      //     console.log("--", v)
-      //     str2 = str2 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
-      //       "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
-      //       v.integral +
-      //       "\u5206</div>\n</li>";
-      //   } else if (i < 60) {
-      //     console.log("++", v)
-      //     str3 = str3 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
-      //       "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
-      //       v.integral +
-      //       "\u5206</div>\n</li>";
-      //   }
-      // }, this);
       move.children[0].innerHTML = str1
       move.children[1].innerHTML = str2
       move.children[2].innerHTML = str3
-
     }
   }
 </script>
