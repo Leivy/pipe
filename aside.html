@@ -166,6 +166,8 @@
     //   '.name').style.height = document.querySelector('.score').style.height = document.querySelector(
     //   '.avatar').style.height = document.querySelector('.avatar').offsetWidth + "px"
 
+
+
     var screen = document.getElementById("screen");
     var move = screen.children[0];
     var ulHeight = move.children[0].offsetHeight
@@ -173,59 +175,53 @@
     var dataArr = $.getJSON("./integral/integral.json", {}, function (data) {
       // console.log(data)
       var perArr = data;
-      setData(perArr)
-      setInterval(function () {
-        console.log("kai")
+
+      // 自己捏造的数据
+      var perArr = []
+      for (var i = 0; i < 8000; i++) {
+        var obj = {}
+        obj.name = i + 1;
+        obj.face = '1.jpg'
+        obj.integral = parseInt(i * Math.random())
+        perArr.push(obj)
+      }
+      // 自己捏造的数据
+
+      move.children[0].innerHTML = setDomEleStr(perArr.splice(0, 20))
+      move.children[1].innerHTML = setDomEleStr(perArr.splice(0, 20))
+      move.children[2].innerHTML = setDomEleStr(perArr.splice(0, 20))
+      var myTimer = setInterval(function () {
         var leader = move.offsetTop;
-        var step = -3;
+        var step = -19;
         leader += step;
         //出去3张就需要瞬间ul给改回来
         if (leader <= -move.children[0].offsetHeight) {
-          perArr.splice(0, 20)
-          console.log(move.children[0].offsetHeight)
-          leader = 0;
+          // console.log(move.children[0].offsetHeight)
+
           if (perArr.length > 0) {
+            leader = 0;
             move.appendChild(move.children[0])
-            // 错误点：ul变化后，重新刷进去的数据是有问题的
-            // setData(perArr)
+            console.log(perArr.length)
+            move.children[2].innerHTML = setDomEleStr(perArr.splice(0, 20))
+          } else {
+            // clearInterval(myTimer)
           }
         }
         move.style.top = leader + "px";
       }, 15)
-
     })
 
-
-    function setData(data) {
-      var str1 = ""
-      var str2 = ""
-      var str3 = ""
-      if (data.length > 60) {
-        for (var i = 0; i < 20; i++) {
-          var v = data[i]
-          str1 = str1 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
-            "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
-            v.integral +
-            "\u5206</div>\n</li>";
-        }
-        for (var i = 20; i < 40; i++) {
-          var v = data[i]
-          str2 = str2 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
-            "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
-            v.integral +
-            "\u5206</div>\n</li>";
-        }
-        for (var i = 40; i < 60; i++) {
-          var v = data[i]
-          str3 = str3 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
-            "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
-            v.integral +
-            "\u5206</div>\n</li>";
-        }
+    // 针对20个数据渲染20个li字符串 接受的参数是总数组splice出的前20个数据
+    function setDomEleStr(data) {
+      var str = ''
+      for (var i = 0; i < 20; i++) {
+        var v = data[i];
+        str = str + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
+          "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
+          v.integral +
+          "\u5206</div>\n</li>";
       }
-      move.children[0].innerHTML = str1
-      move.children[1].innerHTML = str2
-      move.children[2].innerHTML = str3
+      return str;
     }
   }
 </script>
