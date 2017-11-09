@@ -82,6 +82,7 @@
       display: block;
       text-align: left;
       margin: auto;
+      width: 6.5%;
     }
 
     #countdown {
@@ -163,12 +164,23 @@
 
     document.querySelector('.click').onclick = function () {
       var totalNum = 11111111;
+      if (perNum_timer || cd_timer) {
+        clearInterval(perNum_timer)
+        clearInterval(cd_timer)
+      }
       setCountdown(totalNum)
       setPerNum(totalNum)
     }
 
     // 积分显示
     var perNum_timer = null;
+    var cd_timer = null;
+
+    var arr = [
+      [1.5, 0],
+      [30, 100],
+      [45, 2001]
+    ]
 
     function setPerNum(totalNum, arr) {
       var num = 0;
@@ -177,18 +189,27 @@
       document.querySelector("#pernum span").innerHTML = formatGrab(num)
       const curTime = new Date();
       perNum_timer = setInterval(function () {
-        num = num + step;
+        num = num + step
+        document.querySelector('#pernum span').style.width = num.toString().length * 6.5 + "%"
         document.querySelector("#pernum span").innerHTML = formatGrab(num)
       }, 1)
     }
 
-    // 积分线性变化
-    function grabLineChange(arr) {
-      var gNum;
-      arr.forEach(function (v) {
-        
+    // 积分线性变化值
+    function stepChange(arr, endTimePra) {
+      var step = 0;
+      var now = new Date();
+      var endDate = new Date(endTimePra);
+      var pra = endDate - now;
+      console.log(pra)
+      arr.forEach(function (v, i) {
+        if (pra > 60000 - v[0] * 1000) {
+          step = v[1]
+        } else {
+          step = 0;
+        }
       }, this);
-      return formatGrab(gNum)
+      return step
     }
 
     // 倒计时开始
@@ -198,7 +219,7 @@
       endTime.setMinutes(endTime.getMinutes() + b, endTime.getSeconds(), 0);
       document.querySelector("#countdown .second").innerHTML = formatTime(endTime).s;
       document.querySelector("#countdown .millisecond").innerHTML = formatTime(endTime).ms;
-      var cd_timer = setInterval(function () {
+      cd_timer = setInterval(function () {
         document.querySelector("#countdown .second").innerHTML = formatTime(endTime).s;
         document.querySelector("#countdown .millisecond").innerHTML = formatTime(endTime).ms;
         formatTime(endTime, function (e) {

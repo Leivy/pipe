@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>aside</title>
+  <script src="./jquery-3.2.1.min.js"></script>
   <style>
     /* 引入字体文件 */
 
@@ -46,7 +47,7 @@
 
     .wrapper {
       display: flex;
-      width: 100%;
+      width: 600px;
     }
 
     .aside-wrapper {
@@ -61,10 +62,20 @@
       color: #00bebe;
       letter-spacing: 4px;
       text-align: center;
+      height: 6%;
     }
 
     .content {
       /* position: relative; */
+      height: 94%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content .move {
+      height: 100%;
+      width: 100%;
+      position: absolute;
     }
 
     .content ul {}
@@ -127,8 +138,32 @@
   <div class="wrapper">
     <div class="aside-wrapper">
       <div class="title">手速排行榜</div>
-      <div class="content">
+      <div class="content" id="screen">
         <div class="move">
+
+          <ul>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">周三分</div>
+              <div class="score">2330分</div>
+            </li>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">daisu</div>
+              <div class="score">2330分</div>
+            </li>
+            <li>
+              <div class="avatar">
+                <img src="./avatar.jpg" alt="">
+              </div>
+              <div class="name">wawdefr</div>
+              <div class="score">2330分</div>
+            </li>
+          </ul>
 
           <ul>
             <li>
@@ -186,121 +221,98 @@
 <script>
   // 重定高度
   window.onload = function () {
-      document.querySelector('.wrapper').style.height = document.querySelector('.wrapper').offsetWidth * 8.5 / 6.5 +
-        "px"
-      // document.querySelector('.score').style.lineHeight = document.querySelector('.name').style.lineHeight = document.querySelector(
-      //   '.name').style.height = document.querySelector('.score').style.height = document.querySelector(
-      //   '.avatar').style.height = document.querySelector('.avatar').offsetWidth + "px"
+    document.querySelector('.wrapper').style.height = document.querySelector('.wrapper').offsetWidth * 8.5 / 6.5 +
+      "px";
+    // document.querySelector('.score').style.lineHeight = document.querySelector('.name').style.lineHeight = document.querySelector(
+    //   '.name').style.height = document.querySelector('.score').style.height = document.querySelector(
+    //   '.avatar').style.height = document.querySelector('.avatar').offsetWidth + "px"
 
-      var url = "./integral/integral.json";
-      var params = {
-        a: 1,
-        b: 2
-      };
-      $.getJSON(url, params, "callback", function (data) {
-        //todo
-      });
-      var dataArr = $.getJSON("./integral/integral.json", "", "callback", function (data) {
-        console.log(data)
-      })
-
-      // getJSON方法封装
-      var $ = {
-        getJSON: function (url, params, callbackFuncName, callback) {
-          var paramsUrl = "",
-            jsonp = this.getQueryString(url)[callbackFuncName];
-          for (var key in params) {
-            paramsUrl += "&" + key + "=" + encodeURIComponent(params[key]);
+    var screen = document.getElementById("screen");
+    var move = screen.children[0];
+    var ulHeight = move.children[0].offsetHeight
+    var url = "./integral/integral.json"
+    var dataArr = $.getJSON("./integral/integral.json", {}, function (data) {
+      // console.log(data)
+      var perArr = data;
+      setData(perArr)
+      setInterval(function () {
+        console.log("kai")
+        var leader = move.offsetTop;
+        var step = -3;
+        leader += step;
+        //出去3张就需要瞬间ul给改回来
+        if (leader <= -move.children[0].offsetHeight) {
+          perArr.splice(0, 20)
+          console.log(move.children[0].offsetHeight)
+          leader = 0;
+          if (perArr.length > 0) {
+            move.appendChild(move.children[0])
+            // 错误点：ul变化后，重新刷进去的数据是有问题的
+            // setData(perArr)
           }
-          url += paramsUrl;
-          window[jsonp] = function (data) {
-            window[jsonp] = undefined;
-            try {
-              delete window[jsonp];
-            } catch (e) {}
-            if (head) {
-              head.removeChild(script);
-            }
-            callback(data);
-          };
-          var head = document.getElementsByTagName('head')[0];
-          var script = document.createElement('script');
-          script.charset = "UTF-8";
-          script.src = url;
-          head.appendChild(script);
-          return true;
-        },
-        getQueryString: function (url) {
-          var result = {},
-            queryString = (url && url.indexOf("?") != -1 && url.split("?")[1]) || location.search.substring(1),
-            re = /([^&=]+)=([^&]*)/g,
-            m;
-          while (m = re.exec(queryString)) {
-            result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-          }
-          return result;
         }
-      };
-      var $ = {
-        getJSON: function (url, params, callbackFuncName, callback) {
-          var paramsUrl = "",
-            jsonp = this.getQueryString(url)[callbackFuncName];
-          for (var key in params) {
-            paramsUrl += "&" + key + "=" + encodeURIComponent(params[key]);
-          }
-          url += paramsUrl;
-          window[jsonp] = function (data) {
-            window[jsonp] = undefined;
-            try {
-              delete window[jsonp];
-            } catch (e) {}
+        move.style.top = leader + "px";
+      }, 15)
 
-            if (head) {
-              head.removeChild(script);
-            }
-            callback(data);
-          };
+    })
 
-          var head = document.getElementsByTagName('head')[0];
-          var script = document.createElement('script');
-          script.charset = "UTF-8";
-          script.src = url;
-          head.appendChild(script);
-          return true;
-        },
-        getQueryString: function (url) {
-          var result = {},
-            queryString = (url && url.indexOf("?") != -1 && url.split("?")[1]) || location.search.substring(1),
-            re = /([^&=]+)=([^&]*)/g,
-            m;
-          while (m = re.exec(queryString)) {
-            result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-          }
-          return result;
+
+    function setData(data) {
+      var str1 = ""
+      var str2 = ""
+      var str3 = ""
+      if (data.length > 60) {
+        for (var i = 0; i < 20; i++) {
+          var v = data[i]
+          str1 = str1 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
+            "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
+            v.integral +
+            "\u5206</div>\n</li>";
         }
-      };
-
-      function getjson() {
-        var xmlReq;
-        try {
-          xmlReq = new ActiveXObject("Microsoft.XMLHTTP");
-          var web = "./integral/integral.json"; //json文件路径
-
-          //异步方式
-          xmlReq.open("GET", web, true);
-          xmlReq.onreadystatechange = function () {
-            if (xmlReq.readystate == 4) {
-              document.write(xmlReq.responseText); //对json的文件的操作
-            }
-
-          }
-
-          xmlReq.send();
-
-        } catch (e) {
-          alert(e);
+        for (var i = 19; i < 40; i++) {
+          var v = data[i]
+          str2 = str2 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
+            "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
+            v.integral +
+            "\u5206</div>\n</li>";
+        }
+        for (var i = 39; i < 60; i++) {
+          var v = data[i]
+          str3 = str3 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
+            "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
+            v.integral +
+            "\u5206</div>\n</li>";
         }
       }
+
+      // data.forEach(function (v, i) {
+
+      //   if (i < 20) {
+      //     console.log(v)
+      //     str1 = str1 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
+      //       "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
+      //       v.integral +
+      //       "\u5206</div>\n</li>";
+      //   } else if (i < 40) {
+      //     console.log("--", v)
+      //     str2 = str2 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
+      //       "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
+      //       v.integral +
+      //       "\u5206</div>\n</li>";
+      //   } else if (i < 60) {
+      //     console.log("++", v)
+      //     str3 = str3 + "<li>\n    <div class=\"avatar\">\n        <img src='" + v.face +
+      //       "' alt=\"\">\n    </div>\n    <div class=\"name\">" + v.name + "</div>\n    <div class=\"score\">" +
+      //       v.integral +
+      //       "\u5206</div>\n</li>";
+      //   }
+      // }, this);
+      move.children[0].innerHTML = str1
+      move.children[1].innerHTML = str2
+      move.children[2].innerHTML = str3
+
+    }
+  }
 </script>
 
 </html>
