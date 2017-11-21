@@ -160,124 +160,131 @@
       ws_middle.close();
     }
 
+    // 功能实现：
+    function IntergralCD(pra) {
+      this.perNum_timer = null;
+      this.cd_timer = null;
+      this.arr = pra.arr;
+    }
+    IntergralCD.prototype = {
+      constructor: IntergralCD,
+      isInterval: function () {
+        if (this.perNum_timer || this.cd_timer) {
+          clearInterval(this.perNum_timer)
+          clearInterval(this.cd_timer)
+        }
+      },
+      setPerNum: function (totalNum, arr) {
+        // 设置中间积分显示
+        var num = 0;
+        var step = Math.floor(totalNum / 60000) * 2 + 1;
+        // console.log(step)
+        document.querySelector("#pernum span").innerHTML = this.formatGrab(num)
+        const curTime = new Date();
+        var that = this;
+        this.perNum_timer = setInterval(function () {
+          num = num + step
+          document.querySelector('#pernum span').style.width = num.toString().length * 6.5 + "%"
+          document.querySelector("#pernum span").innerHTML = that.formatGrab(num)
+        }, 1)
+      },
+      stepChange: function (arr, endTimePra) {
+        // 积分线性变化值
+        var step = 0;
+        var now = new Date();
+        var endDate = new Date(endTimePra);
+        var pra = endDate - now;
+        // console.log(pra)
+        arr.forEach(function (v, i) {
+          if (pra > 60000 - v[0] * 1000) {
+            step = v[1]
+          } else {
+            step = 0;
+          }
+        }, this);
+        return step
+      },
+      setCountdown: function (totalNum) {
+        // 倒计时开始
+        var endTime = new Date();
+        var b = 1; //分钟数
+        endTime.setMinutes(endTime.getMinutes() + b, endTime.getSeconds(), 0);
+        document.querySelector("#countdown .second").innerHTML = this.formatTime(endTime).s;
+        document.querySelector("#countdown .millisecond").innerHTML = this.formatTime(endTime).ms;
+        var that = this;
+        this.cd_timer = setInterval(function () {
+          document.querySelector("#countdown .second").innerHTML = that.formatTime(endTime).s;
+          document.querySelector("#countdown .millisecond").innerHTML = that.formatTime(endTime).ms;
+          that.formatTime(endTime, function (e) {
+            if (e && e === "over") {
+              clearInterval(that.cd_timer)
+              document.querySelector("#pernum span").innerHTML = that.formatGrab(totalNum)
+              clearInterval(that.perNum_timer)
+            }
+          })
+        }, 1)
+        // console.log(new Date(endTime) - new Date())
+      },
+      formatGrab: function (n) {
+        // 工具：积分格式化
+        var t = parseInt(n),
+          i, r;
+        for (t = t.toString().replace(/^(\d*)$/, "$1."), t = (t + "00").replace(/(\d*\.\d\d)\d*/, "$1"), t = t.replace(
+            ".", ","), i = /(\d)(\d{3},)/; i.test(t);)
+          t = t.replace(i, "$1,$2");
+        return t = t.replace(/,(\d\d)$/, ".$1"), r = t.split("."), r[1] == "00" && (t = r[0]), t
+      },
+      formatTime(pra, callback) {
+        // 工具：时间格式化
+        var now = new Date();
+        var endDate = new Date(pra);
+        var pra = endDate - now;
+        // console.log(pra)
+        var fm = {
+          msFn: function (n) {
+            if (n < 10) return "00" + n.toString();
+            if (n < 100) return "0" + n.toString();
+            return n.toString();
+          },
+          sFn: function (n) {
+            var _n = parseInt(n, 10); //解析字符串,返回整数
+            if (_n > 0) {
+              if (_n <= 9) {
+                _n = "0" + _n
+              }
+              return String(_n);
+            } else {
+              return "00";
+            }
+          },
+        };
+        var pms = {
+          ms: "000",
+          s: "00"
+        }
+        if (pra > 0) {
+          pms.ms = fm.msFn(pra % 1000);
+          pms.s = fm.sFn(pra / 1000)
+        } else {
+          pms.ms = "000";
+          pms.s = "00";
+          callback && callback("over")
+        }
+        return pms;
+      }
+    }
+
+    var inFn = new IntergralCD({
+      arr: []
+    })
     document.querySelector('.click').onclick = function () {
       var totalNum = 11111111;
-      if (perNum_timer || cd_timer) {
-        clearInterval(perNum_timer)
-        clearInterval(cd_timer)
-      }
-      setCountdown(totalNum)
-      setPerNum(totalNum)
-    }
-
-    // 积分显示
-    var perNum_timer = null;
-    var cd_timer = null;
-
-    var arr = [
-      [1.5, 0],
-      [30, 100],
-      [45, 2001]
-    ]
-
-    function setPerNum(totalNum, arr) {
-      var num = 0;
-      var step = Math.floor(totalNum / 60000) * 2 + 1;
-      console.log(step)
-      document.querySelector("#pernum span").innerHTML = formatGrab(num)
-      const curTime = new Date();
-      perNum_timer = setInterval(function () {
-        num = num + step
-        document.querySelector('#pernum span').style.width = num.toString().length * 6.5 + "%"
-        document.querySelector("#pernum span").innerHTML = formatGrab(num)
-      }, 1)
-    }
-
-    // 积分线性变化值
-    function stepChange(arr, endTimePra) {
-      var step = 0;
-      var now = new Date();
-      var endDate = new Date(endTimePra);
-      var pra = endDate - now;
-      console.log(pra)
-      arr.forEach(function (v, i) {
-        if (pra > 60000 - v[0] * 1000) {
-          step = v[1]
-        } else {
-          step = 0;
-        }
-      }, this);
-      return step
-    }
-
-    // 倒计时开始
-    function setCountdown(totalNum) {
-      var endTime = new Date();
-      var b = 1; //分钟数
-      endTime.setMinutes(endTime.getMinutes() + b, endTime.getSeconds(), 0);
-      document.querySelector("#countdown .second").innerHTML = formatTime(endTime).s;
-      document.querySelector("#countdown .millisecond").innerHTML = formatTime(endTime).ms;
-      cd_timer = setInterval(function () {
-        document.querySelector("#countdown .second").innerHTML = formatTime(endTime).s;
-        document.querySelector("#countdown .millisecond").innerHTML = formatTime(endTime).ms;
-        formatTime(endTime, function (e) {
-          if (e && e === "over") {
-            clearInterval(cd_timer)
-            document.querySelector("#pernum span").innerHTML = formatGrab(totalNum)
-            clearInterval(perNum_timer)
-          }
-        })
-      }, 1)
-      console.log(new Date(endTime) - new Date())
-    }
-
-    // 工具：积分格式化
-    function formatGrab(n) {
-      var t = parseInt(n),
-        i, r;
-      for (t = t.toString().replace(/^(\d*)$/, "$1."), t = (t + "00").replace(/(\d*\.\d\d)\d*/, "$1"), t = t.replace(
-          ".", ","), i = /(\d)(\d{3},)/; i.test(t);)
-        t = t.replace(i, "$1,$2");
-      return t = t.replace(/,(\d\d)$/, ".$1"), r = t.split("."), r[1] == "00" && (t = r[0]), t
-    }
-
-    // 工具：时间格式化
-    function formatTime(pra, callback) {
-      var now = new Date();
-      var endDate = new Date(pra);
-      var pra = endDate - now;
-      // console.log(pra)
-      var fm = {
-        msFn: function (n) {
-          if (n < 10) return "00" + n.toString();
-          if (n < 100) return "0" + n.toString();
-          return n.toString();
-        },
-        sFn: function (n) {
-          var _n = parseInt(n, 10); //解析字符串,返回整数
-          if (_n > 0) {
-            if (_n <= 9) {
-              _n = "0" + _n
-            }
-            return String(_n);
-          } else {
-            return "00";
-          }
-        },
-      };
-      var pms = {
-        ms: "000",
-        s: "00"
-      }
-      if (pra > 0) {
-        pms.ms = fm.msFn(pra % 1000);
-        pms.s = fm.sFn(pra / 1000)
-      } else {
-        pms.ms = "000";
-        pms.s = "00";
-        callback && callback("over")
-      }
-      return pms;
+      // 先关闭定时器
+      inFn.isInterval();
+      // 设置倒计时
+      inFn.setCountdown(totalNum);
+      // 设置积分增长
+      inFn.setPerNum(totalNum);
     }
   </script>
 </body>

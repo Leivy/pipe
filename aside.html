@@ -166,49 +166,33 @@
     //   '.name').style.height = document.querySelector('.score').style.height = document.querySelector(
     //   '.avatar').style.height = document.querySelector('.avatar').offsetWidth + "px"
 
-
-
     var screen = document.getElementById("screen");
     var move = screen.children[0];
     var ulHeight = move.children[0].offsetHeight
     var url = "./integral/integral.json"
-    var dataArr = $.getJSON("./integral/integral.json", {}, function (data) {
+    var dataArr = $.getJSON(url, {}, function (data) {
       // console.log(data)
       var perArr = data;
-
-      // 自己捏造的数据
-      var perArr = []
-      for (var i = 0; i < 8000; i++) {
-        var obj = {}
-        obj.name = i + 1;
-        obj.face = '1.jpg'
-        obj.integral = parseInt(i * Math.random())
-        perArr.push(obj)
-      }
-      // 自己捏造的数据
-
       move.children[0].innerHTML = setDomEleStr(perArr.splice(0, 20))
       move.children[1].innerHTML = setDomEleStr(perArr.splice(0, 20))
       move.children[2].innerHTML = setDomEleStr(perArr.splice(0, 20))
-      var myTimer = setInterval(function () {
+      setInterval(function () {
+        console.log("kai")
         var leader = move.offsetTop;
-        var step = -19;
+        var step = -3;
         leader += step;
-        //出去3张就需要瞬间ul给改回来
         if (leader <= -move.children[0].offsetHeight) {
           // console.log(move.children[0].offsetHeight)
-
           if (perArr.length > 0) {
             leader = 0;
             move.appendChild(move.children[0])
-            console.log(perArr.length)
             move.children[2].innerHTML = setDomEleStr(perArr.splice(0, 20))
           } else {
             // clearInterval(myTimer)
           }
         }
         move.style.top = leader + "px";
-      }, 15)
+      }, 1)
     })
 
     // 针对20个数据渲染20个li字符串 接受的参数是总数组splice出的前20个数据
@@ -222,6 +206,11 @@
           "\u5206</div>\n</li>";
       }
       return str;
+    }
+
+    // 待封装
+    function AsideFn(pra) {
+
     }
   }
 </script>

@@ -1,0 +1,123 @@
+<template>
+    <!-- 给当前页面动态绑定active类，
+给button绑定:disabled属性，控制button是否可点
+goPage方法跳转当前页
+prePage 和 nextPage 方法上一页和下一页
+v-if动态判断是否显示省略号
+v-for指令将所有应该显示的页码遍历出来
+-->
+    <div class="pager">
+        <button class="btn btn-pager" :disabled="propsData.pageNum == 1" @click="prePage">上一页</button>
+        <span :class="['page-index',{activ:1 == propsData.pageNum}] " @click="goPage(1)">1</span>
+        <span v-if="preClipped" class="page-index">...</span>
+        <span v-for="index in pages" :class="['page-index',{activ:index == propsData.pageNum}] " @click="goPage(index)">{{index}}</span>
+        <span v-if="backClipped" class="page-index">...</span>
+        <span :class="['page-index',{activ:propsData.pages == propsData.pageNum}] " @click="goPage(propsData.pages)">{{propsData.pages}}</span>
+        <button class="btn btn-pager" :disabled="propsData.pageNum == propsData.pages" @click="nextPage">下一页</button>
+    </div>
+
+</template>
+
+<script type="text/javascript">
+    export default {
+        props: ['propsData'],
+        data: function () {
+            return {
+                backClipped: true,
+                preClipped: false
+            }
+        },
+        watch: {
+            "currentPage": function (page) {
+                this.$emit('page-to', page);
+            },
+            deep: true
+        },
+        methods: {
+            prePage: function () {
+                this.propsData.pageNum--
+            },
+            nextPage: function () {
+                this.propsData.pageNum++
+            },
+            goPage(index) {
+                // 跳转到相应页面
+                if (index !== this.propsData.pageNum) {
+                    this.propsData.pageNum = index
+                }
+            }
+        },
+        computed: {
+            // 使用计算属性来得到每次应该显示的页码
+            pages: function () {
+                let ret = []
+                if (this.propsData.pageNum > 3) {
+                    // 当前页码大于三时，显示当前页码的前2个
+                    ret.push(this.propsData.pageNum - 2)
+                    ret.push(this.propsData.pageNum - 1)
+                    if (this.propsData.pageNum > 4) {
+                        // 当前页与第一页差距4以上时显示省略号
+                        this.preClipped = true
+                    }
+                } else {
+                    this.preClipped = false
+                    for (let i = 2; i < this.propsData.pageNum; i++) {
+                        ret.push(i)
+                    }
+                }
+                if (this.propsData.pageNum !== this.propsData.pages && this.propsData.pageNum !== 1) {
+                    ret.push(this.propsData.pageNum)
+                }
+                if (this.propsData.pageNum < (this.propsData.pages - 2)) {
+                    // 显示当前页码的后2个
+                    ret.push(this.propsData.pageNum + 1)
+                    ret.push(this.propsData.pageNum + 2)
+                    if (this.propsData.pageNum <= (this.propsData.pages - 3)) {
+                        // 当前页与最后一页差距3以上时显示省略号
+                        this.backClipped = true
+                    }
+                } else {
+                    this.backClipped = false
+                    for (let i = (this.propsData.pageNum + 1); i < this.propsData.pages; i++) {
+                        ret.push(i)
+                    }
+                }
+                // 返回整个页码组
+                return ret
+            }
+        }
+    }
+</script>
+
+<!-- 父组件中如何引用： -->
+<pagation :propsData="pageData" @page-to="loadList"></pagation>
+
+<script>
+    import pagation from './test'
+    export default {
+        data() {
+            return {
+                pageData: {
+                    pages: '', //总页数
+                    navigatePages: 8, //显示的导航页个数
+                    pageSize: 1, //每页最多显示的行数
+                    pageNum: 1 //当前页
+                },
+            };
+        },
+        watch: {
+            'pageData.pageNum': 'loadList'
+        },
+        components: {
+            'pagation': pagation
+        },
+        methods: {
+            loadList: function () {
+                //ajax 请求数据
+            }
+        }，
+        mounted: function () {
+            this.loadList();
+        }
+    }
+</script>
